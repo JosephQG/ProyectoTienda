@@ -1,6 +1,7 @@
 package com.tienda.controller;
 
 import com.tienda.domain.Categoria;
+import com.tienda.domain.Categoria;
 import com.tienda.service.CategoriaService;
 import java.util.Locale;
 import java.util.Optional;
@@ -32,17 +33,14 @@ public class CategoriaController {
         var categorias = categoriaService.getCategorias(false);
         model.addAttribute("categorias", categorias);
         model.addAttribute("totalCategorias", categorias.size());
-
-        return "/categoria/listado";
+        return "categoria/listado";
     }
-
 
     @PostMapping("/guardar")
     public String guardar(Categoria categoria, MultipartFile imagenFile, RedirectAttributes redirectAttributes) {
         categoriaService.save(categoria, imagenFile);
         redirectAttributes.addFlashAttribute("todoOk",
                 messageSource.getMessage("mensaje.actualizado", null, Locale.getDefault()));
-
         return "redirect:/categoria/listado";
     }
 
@@ -70,12 +68,17 @@ public class CategoriaController {
     public String modificar(@PathVariable("idCategoria") Integer idCategoria,
             RedirectAttributes redirectAttributes,
             Model model) {
+
         Optional<Categoria> categoriaOpt = categoriaService.getCategoria(idCategoria);
+
         if (categoriaOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", messageSource.getMessage("categoria.error01", null, Locale.getDefault()));
+            redirectAttributes.addFlashAttribute("error",
+                    messageSource.getMessage("categoria.error01", null, Locale.getDefault()));
             return "redirect:/categoria/listado";
         }
+
         model.addAttribute("categoria", categoriaOpt.get());
         return "/categoria/modifica";
     }
+
 }

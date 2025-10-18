@@ -1,10 +1,19 @@
+<!DOCTYPE html>
+<!-- Esto es un comentario... -->
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
     <head th:replace="~{general/fragmentos :: head}"/>
+
     <body>
+
         <header th:replace="~{general/fragmentos :: header}"/>
 
+        <section th:replace="~{consultas/fragmentos :: tabs}"/>
+        <section th:replace="~{consultas/fragmentos :: tarjetas}"/>
+
         <footer th:replace="~{general/fragmentos :: footer}"/>
+
     </body>
 </html>
