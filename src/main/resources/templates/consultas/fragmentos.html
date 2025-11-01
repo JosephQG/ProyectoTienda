@@ -1,79 +1,126 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity-6">
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
     <head th:replace="~{general/plantilla :: head}"/>
 
+    <body>
+        <!-- fragmento 1 para mostrar en tabs las categorias -->
+        <section th:fragment="tabs" class="py-3 mb-4">
+            <div class="d-flex justify-content-center px-5">
+                <ul class="nav nav-underline">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="/">[[#{pruebas.todas}]]</a>
+                    </li>
+                    <li th:each="c : ${categorias}" class="nav-item">
+                        <a class="nav-link" 
+                           th:href="@{/consultas/{id}(id=${c.idCategoria})}">[[${c.descripcion}]]</a>
+                    </li>
+                </ul>
+            </div>
+        </section>
 
-    <!-- fragmento 1 para mostrar en tabs las categorias -->
-    <section th:fragment="tabs" class='py-3 mb-4'>
-        <div class='d-flex justify-content-center px-5'>
-            <ul class="nav nav-underline">
-                <li class="nav-item">
-                    <a class="nav-link" aria-current="page"
-                       href="/">[[#{pruebas.todas}]]</a>
-                </li>
-                <li th:each='c : ${categorias}' class="nav-item">
-                    <a class="nav-link"
-                       th:href="@{/consultas/{id}(id=${c.idCategoria})}">
-                        [[${c.descripcion}]] </a>
-                </li>
-            </ul>
-        </div>
-    </section>
+        <!-- fragmento 2 para mostrar en tarjetas los productos -->
+        <section th:fragment="tarjetas" class="container py-4">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
+                <div th:each="p : ${productos}" class="col">
 
-
-    <!-- fragmento 2 para mostrar en tarjetas los productos -->
-    <section th:fragment="tarjetas" class='container py-4'>
-        <div class='row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4'>
-            <div th:each='p : ${productos}' class='col'>
-
-                <div class="card h-100 shadow">
-
-                    <!-- Imagen centrada -->
-                    <div class='d-flex justify-content-center align-items-center bg-light p-3'
-                         style="height: 200px;">
-                        <img th:src="${p.rutaImagen}" class="img-fluid"
-                             style="max-height: 100%; max-width: 100%; object-fit: contain"
-                             alt="..." />
-                    </div>
-
-                    <!-- Título -->
-                    <div class="card-header bg-white">
-                        <h5 class="card-title text-center text-truncate mb-0"
-                            th:text="${p.descripcion}">Título</h5>
-                    </div>
-
-                    <!-- Detalle -->
-                    <div class="card-body d-flex flex-column">
-                        <p class="card-text text-muted mb-auto text-truncate"
-                           th:text="${p.detalle}">Detalle.</p>
-                    </div>
-
-                    <!-- Precio + Existencias -->
-                    <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-                        <div class="fw-bold">
-
-                            <!-- Precio -->
-                            <span class="text-success h5"
-                                  th:text="${#numbers.formatCurrency(p.precio)}">99.99</span>
-
-                            <!-- Existencias (verde si hay, rojo si no) -->
-                            <span th:if="${p.existencias > 0}"
-                                  class="badge text-bg-success ms-2"
-                                  th:text="${p.existencias + ' unidades'}">unidades</span>
-
-                            <span th:unless="${p.existencias > 0}"
-                                  class="badge text-bg-danger ms-2"
-                                  th:text="'Agotado'">Agotado</span>
+                    <div class="card h-100 shadow">
+                        <div class="d-flex justify-content-center align-items-center bg-light p-3"
+                             style="height: 200px;">
+                            <img th:src="${p.rutaImagen}" class="img-fluid"
+                                 style="max-height: 100%; max-width: 100%; object-fit: contain"
+                                 alt="...">
+                        </div>
+                        <div class="card-header bg-white">
+                            <h5 class="card-title text-center text-truncate mb-0"
+                                th:text="${p.descripcion}">Titulo</h5>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <p class="card-text text-muted mb-auto text-truncate"
+                               th:text="${p.detalle}">Detalle.</p>
+                        </div>
+                        <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                            <div class="fw.bold">
+                                <span class="text-success h5" th:text="${#numbers.formatCurrency(p.precio)}">99.99</span>
+                                <span th:if="${p.existencias > 0}"class="badge text-bg-success ms-2" th:text="${p.existencias} + ' unidades '">unidades</span>
+                                <span th:unless="${p.existencias > 0}"class="badge text-bg-danger ms-2" th:text="Agotado"> Agotado</span>
+                            </div>
+                            <form action="/carrito/agregar" th:method="POST" class="d-inline">
+                                <input type="hidden" name="idProducto" th:value="${p.idProducto}"/>
+                                <button type="button" class="btn btn-primary"
+                                        th:disabled="${p.existencias == 0}"
+                                        onclick="addCart(this.form)">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </form>
 
                         </div>
                     </div>
-
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-</body>
+        <section th:fragment="consultas" class="row row-cols-4 p-2">
+            <div th:replace="~{consultas/fragmentos :: consultaForm('primary',#{pruebas.ampliadas},'/consultas/consultaDerivada')}"/>
+            <div th:replace="~{consultas/fragmentos :: consultaForm('warning',#{pruebas.jpql},'/consultas/consultaJPQL')}"/>
+            <div th:replace="~{consultas/fragmentos :: consultaForm('success',#{pruebas.nativo},'/consultas/consultaSQL')}"/>
+            <div th:replace="~{consultas/fragmentos :: consultaFormCategoria('info','Consulta por Categoría','/consultas/consultaCategoria')}"/>
+        </section>
+
+        <div th:fragment='consultaForm(colorForm,textoForm,urlForm)'>
+            <form method="post" th:action="@{${urlForm}}" class="was-validated">
+                <div class="card">
+                    <div class="card-header text-center text-white" th:classappend="${'bg-'+colorForm}">
+                        <h5>[[${textoForm}]]</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label>[[#{pruebas.precio.inferior}]]</label>
+                            <input type="number" name="precioInf" th:value="${precioInf}"
+                                   class="form-control" min="0" required/>
+                        </div>
+                        <div class="mb-3">
+                            <label>[[#{pruebas.precio.superior}]]</label>
+                            <input type="number" name="precioSup" th:value="${precioSup}"
+                                   class="form-control" min="0" required/>
+                        </div>
+                    </div>
+                    <div class="card-footer text-center">
+                        <button type="submit" class="btn text-white" th:classappend="${'btn-'+colorForm}">
+                            <i class="fa-solid fa-magnifying-glass"></i> [[${textoForm}]]
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div th:fragment='consultaFormCategoria(colorForm,textoForm,urlForm)'>
+            <form method="post" th:action="@{${urlForm}}" class="was-validated">
+                <div class="card">
+                    <div class="card-header text-center text-white" th:classappend="${'bg-'+colorForm}">
+                        <h5>[[${textoForm}]]</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label>Seleccione Categoría</label>
+                            <select name="idCategoria" class="form-select" required>
+                                <option value="">Seleccione...</option>
+                                <option th:each="c : ${categorias}" 
+                                        th:value="${c.idCategoria}" 
+                                        th:text="${c.descripcion}"
+                                        th:selected="${idCategoria != null && idCategoria == c.idCategoria}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-footer text-center">
+                        <button type="submit" class="btn text-white" th:classappend="${'btn-'+colorForm}">
+                            <i class="fa-solid fa-magnifying-glass"></i> [[${textoForm}]]
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </body>
 </html>
