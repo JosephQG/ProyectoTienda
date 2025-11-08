@@ -80,6 +80,30 @@
 	  <version>2.56.0</version>
 	  <type>jar</type>
 	 </dependency>
+	 <dependency>
+	  <groupId>org.apache.servicemix.bundles</groupId>
+	  <artifactId>org.apache.servicemix.bundles.spring-security-config</artifactId>
+	  <version>5.2.1.RELEASE_1</version>
+	  <type>bundle</type>
+	 </dependency>
+	 <dependency>
+	  <groupId>org.apache.servicemix.bundles</groupId>
+	  <artifactId>org.apache.servicemix.bundles.spring-security-web</artifactId>
+	  <version>5.8.14_1</version>
+	  <type>bundle</type>
+	 </dependency>
+	 <dependency>
+	  <groupId>org.springframework.security</groupId>
+	  <artifactId>spring-security-config</artifactId>
+	  <version>7.0.0</version>
+	  <type>jar</type>
+	 </dependency>
+	 <dependency>
+	  <groupId>org.springframework.security</groupId>
+	  <artifactId>spring-security-web</artifactId>
+	  <version>7.0.0</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
 
 	<build>
