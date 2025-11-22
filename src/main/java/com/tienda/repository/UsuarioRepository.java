@@ -4,12 +4,10 @@ import com.tienda.domain.Usuario;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
-    public Optional<Usuario> findByUsernameAndActivoTrue(String username);
+    Optional<Usuario> findByUsernameAndActivoTrue(String username);
 
     public List<Usuario> findByActivoTrue();
 
@@ -21,4 +19,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     public boolean existsByUsernameOrCorreo(String username, String correo);
 
+    public Optional<Usuario> findByCorreo(String correo);
 }
